@@ -1,14 +1,19 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+
+
+# Install required packages
+subprocess.call(["pip", "install", "kafka-python"])
+
 from kafka import KafkaConsumer
 
 
 st.title('A Wanted project')
 
-DATE_COLUMN = 'date/time'
-DATA_URL = ('https://s3-us-west-2.amazonaws.com/'
-         'streamlit-demo-data/uber-raw-data-sep14.csv.gz')
+##DATE_COLUMN = 'date/time'
+##DATA_URL = ('https://s3-us-west-2.amazonaws.com/'
+##         'streamlit-demo-data/uber-raw-data-sep14.csv.gz')
 
 # Connect to Kafka
 cloud_api_key = 'PVOPH4N5P77FTZMI'
