@@ -13,7 +13,7 @@ DATA_URL = ('https://s3-us-west-2.amazonaws.com/'
 # Connect to Kafka
 cloud_api_key = 'PVOPH4N5P77FTZMI'
 cloud_api_secret = 'hYsgWo6H52afMzq1Az3iGn6gC7aD4A/jNU0H//QCtmoz1T3njqg8ZMCKOf960dd+'
-bootstrap_servers = 'pkc-7xoy1.eu-central-1.aws.confluent.cloud:9092
+bootstrap_servers = 'pkc-7xoy1.eu-central-1.aws.confluent.cloud:9092'
 
 consumer = KafkaConsumer(
     'scored_data',
