@@ -167,15 +167,15 @@ if kafkaC:
                 record_value = msg.value()
                 data = json.loads(record_value)
                 newdata = True
-                passenger = response_data.get('PassengerId', 'N/A')
-                name = response_data.get('Name', 'Unknown')
-                HomePlanet = response_data.get('HomePlanet', 'Earth')
-                CryptoSleep = response_data.get('CryoSleep', False)
-                cabin = response_data.get('Cabin', 'N/A')
-                destination = response_data.get('Destination', 'TRAPPIST-1e')
-                age = response_data.get('Age', 20.0)
-                vip = response_data.get('VIP', False)  
-                roomService = response_data.get('RoomService', 0)  
+                passenger = data.get('PassengerId', 'N/A')
+                name = data.get('Name', 'Unknown')
+                HomePlanet = data.get('HomePlanet', 'Earth')
+                CryptoSleep = data.get('CryoSleep', False)
+                cabin = data.get('Cabin', 'N/A')
+                destination = data.get('Destination', 'TRAPPIST-1e')
+                age = data.get('Age', 20.0)
+                vip = data.get('VIP', False)  
+                roomService = data.get('RoomService', 0)  
                 time.sleep(10) # Wait 10  second
     except KeyboardInterrupt:
         pass
@@ -207,15 +207,15 @@ else:
                 data = json.loads(record_value)
                 st.write(data)
                 newdata = True
-                passenger = response_data.get('PassengerId', 'N/A')
-                name = response_data.get('Name', 'Unknown')
-                HomePlanet = response_data.get('HomePlanet', 'Earth')
-                CryptoSleep = response_data.get('CryoSleep', False)
-                cabin = response_data.get('Cabin', 'N/A')
-                destination = response_data.get('Destination', 'TRAPPIST-1e')
-                age = response_data.get('Age', 20.0)
-                vip = response_data.get('VIP', False)  
-                roomService = response_data.get('RoomService', 0)  
+                passenger = data.get('PassengerId', 'N/A')
+                name = data.get('Name', 'Unknown')
+                HomePlanet = data.get('HomePlanet', 'Earth')
+                CryptoSleep = data.get('CryoSleep', False)
+                cabin = data.get('Cabin', 'N/A')
+                destination = data.get('Destination', 'TRAPPIST-1e')
+                age = data.get('Age', 20.0)
+                vip = data.get('VIP', False)  
+                roomService = data.get('RoomService', 0)  
                 time.sleep(10) # Wait 10  second
     except KeyboardInterrupt:
         pass
