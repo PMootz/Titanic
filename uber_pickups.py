@@ -205,7 +205,7 @@ else:
                 record_key = msg.key()
                 record_value = msg.value()
                 data = json.loads(record_value)
-                sr.write(data)
+                st.write(data)
                 newdata = True
                 passenger = response_data.get('PassengerId', 'N/A')
                 name = response_data.get('Name', 'Unknown')
