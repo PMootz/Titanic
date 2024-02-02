@@ -130,10 +130,29 @@ record_to_predict = {
       "Name": name
 }
 #st.table(pd.DataFrame(record_to_predict, index=[0]))
+# Fetch the base64-encoded secret variable from the environment
+encoded_secret_variableD = os.environ.get("DATAIKU_API")
+    # Decode the base64-encoded secret variable
+decoded_bytes = base64.b64decode(encoded_secret_variableD)
+dataikuApi= decoded_bytes.decode('utf-8')
+encoded_secret_variableK = os.environ.get("KAFKA_API")
+    # Decode the base64-encoded secret variable
+decoded_bytes = base64.b64decode(encoded_secret_variableK)
+kafkaApi= decoded_bytes.decode('utf-8')
+encoded_secret_variableKS = os.environ.get("KAFKA_API_SECRET")
+    # Decode the base64-encoded secret variable
+decoded_bytes = base64.b64decode(encoded_secret_variableKS)
+kafkaApiS= decoded_bytes.decode('utf-8')
+encoded_secret_variableKSs = os.environ.get("KAFKA_SERVER")
+    # Decode the base64-encoded secret variable
+decoded_bytes = base64.b64decode(encoded_secret_variableKSs)
+kafkaS= decoded_bytes.decode('utf-8')
 
+if(dataikuApi!=''):
+    client = dataikuapi.APINodeClient(dataikuApi)
+else:
+    client = dataikuapi.APINodeClient("https://api-4034dccc-eaecd172-dku.eu-west-3.app.dataiku.io/", "space_titanic_crounch")
 
-
-client = dataikuapi.APINodeClient("https://api-4034dccc-eaecd172-dku.eu-west-3.app.dataiku.io/", "space_titanic_crounch")
 if(button_clicked or api_clicked):
     st.table(pd.DataFrame(record_to_predict, index=[0]))
     prediction = client.predict_record("space_titanic_end", record_to_predict)
@@ -146,27 +165,11 @@ if(button_clicked or api_clicked):
     st.bar_chart(prediction['result']["probas"])
     api_clicked = False
 
-# Fetch the base64-encoded secret variable from the environment
-encoded_secret_variableD = os.environ.get("DATAIKU_API")
-    # Decode the base64-encoded secret variable
-secret_variable = decode_base64(encoded_secret_variableD)
-encoded_secret_variableK = os.environ.get("KAFKA_API")
-    # Decode the base64-encoded secret variable
-secret_variableK = decode_base64(encoded_secret_variableK)
-encoded_secret_variableKS = os.environ.get("KAFKA_API_SECRET")
-    # Decode the base64-encoded secret variable
-secret_variable2 = decode_base64(encoded_secret_variableKS)
-encoded_secret_variableKSs = os.environ.get("KAFKA_SERVER")
-    # Decode the base64-encoded secret variable
-secret_variable3 = decode_base64(encoded_secret_variableKSs)
-
-st.write(f"The secret variable is: {secret_variable}")
-st.write(secret_variable2 + " " + secret_variable3 + " " + secret_variableK)
 
 # Connect to Kafka
-cloud_api_key = 'PVOPH4N5P77FTZMI'
-cloud_api_secret = 'hYsgWo6H52afMzq1Az3iGn6gC7aD4A/jNU0H//QCtmoz1T3njqg8ZMCKOf960dd+'
-bootstrap_servers = 'pkc-7xoy1.eu-central-1.aws.confluent.cloud:9092'
+cloud_api_key = kafkaApi
+cloud_api_secret = kafkaApiS
+bootstrap_servers = kafkaS
 
 consumer = KafkaConsumer(
     'titanic',
