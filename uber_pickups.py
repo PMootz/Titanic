@@ -150,29 +150,29 @@ if kafkaC:
     # Subscribe to topic
     consumer.subscribe([TOPIC])
     try:
-    while True:
-        msg = consumer.poll(5.0) # Search for all non-consumed events. It times out after 5 second
-        if msg is None:
-            print("Waiting for message or event/error in poll()")
-            continue
-        elif msg.error():
-            st.write('error: {}'.format(msg.error()))
-        else:
-            # Check for Kafka message
-            record_key = msg.key()
-            record_value = msg.value()
-            data = json.loads(record_value)
-            newdata = True
-            passenger = response_data.get('PassengerId', 'N/A')
-            name = response_data.get('Name', 'Unknown')
-            HomePlanet = response_data.get('HomePlanet', 'Earth')
-            CryptoSleep = response_data.get('CryoSleep', False)
-            cabin = response_data.get('Cabin', 'N/A')
-            destination = response_data.get('Destination', 'TRAPPIST-1e')
-            age = response_data.get('Age', 20.0)
-            vip = response_data.get('VIP', False)  
-            roomService = response_data.get('RoomService', 0)  
-            time.sleep(10) # Wait 10  second
+        while True:
+            msg = consumer.poll(5.0) # Search for all non-consumed events. It times out after 5 second
+            if msg is None:
+                print("Waiting for message or event/error in poll()")
+                continue
+            elif msg.error():
+                st.write('error: {}'.format(msg.error()))
+            else:
+                # Check for Kafka message
+                record_key = msg.key()
+                record_value = msg.value()
+                data = json.loads(record_value)
+                newdata = True
+                passenger = response_data.get('PassengerId', 'N/A')
+                name = response_data.get('Name', 'Unknown')
+                HomePlanet = response_data.get('HomePlanet', 'Earth')
+                CryptoSleep = response_data.get('CryoSleep', False)
+                cabin = response_data.get('Cabin', 'N/A')
+                destination = response_data.get('Destination', 'TRAPPIST-1e')
+                age = response_data.get('Age', 20.0)
+                vip = response_data.get('VIP', False)  
+                roomService = response_data.get('RoomService', 0)  
+                time.sleep(10) # Wait 10  second
     except KeyboardInterrupt:
         pass
     finally:
@@ -189,30 +189,30 @@ else:
     # Subscribe to topic
     consumer.subscribe([TOPIC])
     try:
-    while True:
-        msg = consumer.poll(5.0) # Search for all non-consumed events. It times out after 5 second
-        if msg is None:
-            print("Waiting for message or event/error in poll()")
-            continue
-        elif msg.error():
-            st.write('error: {}'.format(msg.error()))
-        else:
-            # Check for Kafka message
-            record_key = msg.key()
-            record_value = msg.value()
-            data = json.loads(record_value)
-            sr.write(data)
-            newdata = True
-            passenger = response_data.get('PassengerId', 'N/A')
-            name = response_data.get('Name', 'Unknown')
-            HomePlanet = response_data.get('HomePlanet', 'Earth')
-            CryptoSleep = response_data.get('CryoSleep', False)
-            cabin = response_data.get('Cabin', 'N/A')
-            destination = response_data.get('Destination', 'TRAPPIST-1e')
-            age = response_data.get('Age', 20.0)
-            vip = response_data.get('VIP', False)  
-            roomService = response_data.get('RoomService', 0)  
-            time.sleep(10) # Wait 10  second
+        while True:
+            msg = consumer.poll(5.0) # Search for all non-consumed events. It times out after 5 second
+            if msg is None:
+                print("Waiting for message or event/error in poll()")
+                continue
+            elif msg.error():
+                st.write('error: {}'.format(msg.error()))
+            else:
+                # Check for Kafka message
+                record_key = msg.key()
+                record_value = msg.value()
+                data = json.loads(record_value)
+                sr.write(data)
+                newdata = True
+                passenger = response_data.get('PassengerId', 'N/A')
+                name = response_data.get('Name', 'Unknown')
+                HomePlanet = response_data.get('HomePlanet', 'Earth')
+                CryptoSleep = response_data.get('CryoSleep', False)
+                cabin = response_data.get('Cabin', 'N/A')
+                destination = response_data.get('Destination', 'TRAPPIST-1e')
+                age = response_data.get('Age', 20.0)
+                vip = response_data.get('VIP', False)  
+                roomService = response_data.get('RoomService', 0)  
+                time.sleep(10) # Wait 10  second
     except KeyboardInterrupt:
         pass
     finally:
