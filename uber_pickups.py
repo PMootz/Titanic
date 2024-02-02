@@ -146,7 +146,7 @@ if kafkaC:
     consumer_conf['group.id'] = 'python-group-1'
     consumer_conf['auto.offset.reset'] = 'earliest' # This means that you will consume latest messages that your script haven't consumed yet!
     consumer = Consumer(consumer_conf)
-     st.write("Data from Kafka")
+    st.write("Data from Kafka")
     # Subscribe to topic
     consumer.subscribe([TOPIC])
     try:
