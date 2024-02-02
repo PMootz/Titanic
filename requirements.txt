@@ -2,4 +2,4 @@ kafka-python==2.0.2
 dataiku-api-client==12.5.0
 avro==1.11.3
 confluent-kafka[avro]==1.11.0
-confluent_kafka
+confluent_kafka==1.7.0
