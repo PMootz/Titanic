@@ -129,30 +129,41 @@ record_to_predict = {
       "Total": total,
       "Name": name
 }
-#st.table(pd.DataFrame(record_to_predict, index=[0]))
+
+kafkaC=True
 # Fetch the base64-encoded secret variable from the environment
 encoded_secret_variableD = os.environ.get("DATAIKU_API")
+if encoded_secret_variableD:
+    decoded_bytes = base64.b64decode(encoded_secret_variableD)
+    dataikuApi= decoded_bytes.decode('utf-8')
+else:
+    dataikuApi ="https://api-4034dccc-eaecd172-dku.eu-west-3.app.dataiku.io/"
     # Decode the base64-encoded secret variable
-decoded_bytes = base64.b64decode(encoded_secret_variableD)
-dataikuApi= decoded_bytes.decode('utf-8')
+
 encoded_secret_variableK = os.environ.get("KAFKA_API")
     # Decode the base64-encoded secret variable
-decoded_bytes = base64.b64decode(encoded_secret_variableK)
-kafkaApi= decoded_bytes.decode('utf-8')
+if encoded_secret_variableK:
+    decoded_bytes = base64.b64decode(encoded_secret_variableK)
+    kafkaApi= decoded_bytes.decode('utf-8')
+else:
+    kafkaC=False
+
 encoded_secret_variableKS = os.environ.get("KAFKA_API_SECRET")
     # Decode the base64-encoded secret variable
-decoded_bytes = base64.b64decode(encoded_secret_variableKS)
-kafkaApiS= decoded_bytes.decode('utf-8')
+if encoded_secret_variableKS:
+    decoded_bytes = base64.b64decode(encoded_secret_variableKS)
+    kafkaApiS= decoded_bytes.decode('utf-8')
+else:
+    kafkaC=False
 encoded_secret_variableKSs = os.environ.get("KAFKA_SERVER")
     # Decode the base64-encoded secret variable
-decoded_bytes = base64.b64decode(encoded_secret_variableKSs)
-kafkaS= decoded_bytes.decode('utf-8')
-
-if(dataikuApi!=''):
-    client = dataikuapi.APINodeClient(dataikuApi)
+if encoded_secret_variableKSs:
+    decoded_bytes = base64.b64decode(encoded_secret_variableKSs)
+    kafkaS= decoded_bytes.decode('utf-8')
 else:
-    client = dataikuapi.APINodeClient("https://api-4034dccc-eaecd172-dku.eu-west-3.app.dataiku.io/", "space_titanic_crounch")
+    kafkaC=False
 
+client = dataikuapi.APINodeClient(dataikuApi,"space_titanic_crounch")
 if(button_clicked or api_clicked):
     st.table(pd.DataFrame(record_to_predict, index=[0]))
     prediction = client.predict_record("space_titanic_end", record_to_predict)
@@ -170,17 +181,17 @@ if(button_clicked or api_clicked):
 cloud_api_key = kafkaApi
 cloud_api_secret = kafkaApiS
 bootstrap_servers = kafkaS
-
-consumer = KafkaConsumer(
-    'titanic',
-    group_id='streamlit-group',
-    security_protocol='SASL_SSL',
-    sasl_mechanism='PLAIN',
-    sasl_plain_username=cloud_api_key,
-    sasl_plain_password=cloud_api_secret,
-    bootstrap_servers=bootstrap_servers,
-)
-
-
-for message in consumer:
-    st.write(f"Received: {message.value.decode('utf-8')}")
+if kafkaC:
+    consumer = KafkaConsumer(
+        'titanic',
+        group_id='streamlit-group',
+        security_protocol='SASL_SSL',
+        sasl_mechanism='PLAIN',
+        sasl_plain_username=cloud_api_key,
+        sasl_plain_password=cloud_api_secret,
+        bootstrap_servers=bootstrap_servers,
+    )
+    
+    
+    for message in consumer:
+        st.write(f"Received: {message.value.decode('utf-8')}")
