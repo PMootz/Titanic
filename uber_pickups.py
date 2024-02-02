@@ -105,6 +105,9 @@ button_clicked  = st.button("Check the survival rate")
 
 
 kafkaC=True
+kafkaApi =""
+kafkaApiS=""
+kafkaS=""
 # Fetch the base64-encoded secret variable from the environment
 encoded_secret_variableD = os.environ.get("DATAIKU_API")
 if encoded_secret_variableD:
@@ -136,6 +139,7 @@ if encoded_secret_variableKSs:
     kafkaS= decoded_bytes.decode('utf-8')
 else:
     kafkaC=False
+
 
 # Connect to Kafka
 CLUSTER_API_KEY = kafkaApi
