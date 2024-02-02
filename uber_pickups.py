@@ -5,17 +5,14 @@ import requests
 import json
 import os
 import base64
+import ccloud_lib
+from confluent_kafka import Consumer
+import time
 
 from kafka import KafkaConsumer
+CONF = ccloud_lib.read_ccloud_config("python.config")
+TOPIC = "spaceship_titanic_data" 
 
-def decode_base64(encoded_str):
-    try:
-        decoded_bytes = base64.b64decode(encoded_str)
-        decoded_str = decoded_bytes.decode('utf-8')
-        return decoded_str
-    except Exception as e:
-        st.error(f"Error decoding base64: {e}")
-        return ""
 
 st.title('A Wanted project')
 
@@ -104,31 +101,8 @@ if(api_clicked):
         # Print an error message if the request was not successful
         st.text("Error:", response.status_code)
 
-total = float(foodCourt+roomService+spa+shoppingMall+vrDeck)
 button_clicked  = st.button("Check the survival rate")
-if(passenger==''):
-    passenger = 'N/A'
-if(name==''):
-    name='Unknow'
-if(cabin ==''):
-    cabin='N/A'
 
-record_to_predict = {
-      "PassengerId": passenger,
-      "HomePlanet": HomePlanet,
-      "CryoSleep": CryptoSleep,
-      "Cabin": cabin,
-      "Destination": destination,
-      "Age": age,
-      "VIP": vip,
-      "new_RoomService": roomService,
-      "new_FoodCourt": foodCourt,
-      "new_ShoppingMall": shoppingMall,
-      "new_Spa": spa,
-      "new_VRDeck": vrDeck,
-      "Total": total,
-      "Name": name
-}
 
 kafkaC=True
 # Fetch the base64-encoded secret variable from the environment
@@ -163,8 +137,116 @@ if encoded_secret_variableKSs:
 else:
     kafkaC=False
 
+# Connect to Kafka
+CLUSTER_API_KEY = kafkaApi
+CLUSTER_API_SECRET = kafkaApiS
+bootstrap_servers = kafkaS
+if kafkaC:
+    consumer_conf = ccloud_lib.pop_schema_registry_params_from_config(CONF)
+    consumer_conf['group.id'] = 'python-group-1'
+    consumer_conf['auto.offset.reset'] = 'earliest' # This means that you will consume latest messages that your script haven't consumed yet!
+    consumer = Consumer(consumer_conf)
+     st.write("Data from Kafka")
+    # Subscribe to topic
+    consumer.subscribe([TOPIC])
+    try:
+    while True:
+        msg = consumer.poll(5.0) # Search for all non-consumed events. It times out after 5 second
+        if msg is None:
+            print("Waiting for message or event/error in poll()")
+            continue
+        elif msg.error():
+            st.write('error: {}'.format(msg.error()))
+        else:
+            # Check for Kafka message
+            record_key = msg.key()
+            record_value = msg.value()
+            data = json.loads(record_value)
+            newdata = True
+            passenger = response_data.get('PassengerId', 'N/A')
+            name = response_data.get('Name', 'Unknown')
+            HomePlanet = response_data.get('HomePlanet', 'Earth')
+            CryptoSleep = response_data.get('CryoSleep', False)
+            cabin = response_data.get('Cabin', 'N/A')
+            destination = response_data.get('Destination', 'TRAPPIST-1e')
+            age = response_data.get('Age', 20.0)
+            vip = response_data.get('VIP', False)  
+            roomService = response_data.get('RoomService', 0)  
+            time.sleep(10) # Wait 10  second
+    except KeyboardInterrupt:
+        pass
+    finally:
+        # Leave group and commit final offsets
+        consumer.close()
+else:
+    CLUSTER_API_KEY  = 'PVOPH4N5P77FTZMI'
+    CLUSTER_API_SECRET = 'hYsgWo6H52afMzq1Az3iGn6gC7aD4A/jNU0H//QCtmoz1T3njqg8ZMCKOf960dd+'
+    consumer_conf = ccloud_lib.pop_schema_registry_params_from_config(CONF)
+    consumer_conf['group.id'] = 'python-group-1'
+    consumer_conf['auto.offset.reset'] = 'earliest' # This means that you will consume latest messages that your script haven't consumed yet!
+    consumer = Consumer(consumer_conf)
+    st.write("Data from Kafka")
+    # Subscribe to topic
+    consumer.subscribe([TOPIC])
+    try:
+    while True:
+        msg = consumer.poll(5.0) # Search for all non-consumed events. It times out after 5 second
+        if msg is None:
+            print("Waiting for message or event/error in poll()")
+            continue
+        elif msg.error():
+            st.write('error: {}'.format(msg.error()))
+        else:
+            # Check for Kafka message
+            record_key = msg.key()
+            record_value = msg.value()
+            data = json.loads(record_value)
+            sr.write(data)
+            newdata = True
+            passenger = response_data.get('PassengerId', 'N/A')
+            name = response_data.get('Name', 'Unknown')
+            HomePlanet = response_data.get('HomePlanet', 'Earth')
+            CryptoSleep = response_data.get('CryoSleep', False)
+            cabin = response_data.get('Cabin', 'N/A')
+            destination = response_data.get('Destination', 'TRAPPIST-1e')
+            age = response_data.get('Age', 20.0)
+            vip = response_data.get('VIP', False)  
+            roomService = response_data.get('RoomService', 0)  
+            time.sleep(10) # Wait 10  second
+    except KeyboardInterrupt:
+        pass
+    finally:
+        # Leave group and commit final offsets
+        consumer.close()
+    
+    
+if(passenger==''):
+    passenger = 'N/A'
+if(name==''):
+    name='Unknow'
+if(cabin ==''):
+    cabin='N/A'
+
+record_to_predict = {
+      "PassengerId": passenger,
+      "HomePlanet": HomePlanet,
+      "CryoSleep": CryptoSleep,
+      "Cabin": cabin,
+      "Destination": destination,
+      "Age": age,
+      "VIP": vip,
+      "new_RoomService": roomService,
+      "new_FoodCourt": foodCourt,
+      "new_ShoppingMall": shoppingMall,
+      "new_Spa": spa,
+      "new_VRDeck": vrDeck,
+      "Total": total,
+      "Name": name
+}
+total = float(foodCourt+roomService+spa+shoppingMall+vrDeck)
+
 client = dataikuapi.APINodeClient(dataikuApi,"space_titanic_crounch")
-if(button_clicked or api_clicked):
+if(button_clicked or api_clicked or newdata):
     st.table(pd.DataFrame(record_to_predict, index=[0]))
     prediction = client.predict_record("space_titanic_end", record_to_predict)
     if(passenger =='N/A'):
@@ -175,23 +257,5 @@ if(button_clicked or api_clicked):
     st.text("The passenger " + name + " is " + outcome + " with a probability of "+ str(round(prediction['result']["probas"][prediction['result']["prediction"]],4)*100)+"%")
     st.bar_chart(prediction['result']["probas"])
     api_clicked = False
-
-
-# Connect to Kafka
-cloud_api_key = kafkaApi
-cloud_api_secret = kafkaApiS
-bootstrap_servers = kafkaS
-if kafkaC:
-    consumer = KafkaConsumer(
-        'titanic',
-        group_id='streamlit-group',
-        security_protocol='SASL_SSL',
-        sasl_mechanism='PLAIN',
-        sasl_plain_username=cloud_api_key,
-        sasl_plain_password=cloud_api_secret,
-        bootstrap_servers=bootstrap_servers,
-    )
-    
-    
-    for message in consumer:
-        st.write(f"Received: {message.value.decode('utf-8')}")
+    newdata=False
+  
