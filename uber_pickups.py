@@ -1,9 +1,21 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import dataikuapi
+import requests
+import json
+import os
+import base64
+
 from kafka import KafkaConsumer
 
+def decode_base64(encoded_str):
+    try:
+        decoded_bytes = base64.b64decode(encoded_str)
+        decoded_str = decoded_bytes.decode('utf-8')
+        return decoded_str
+    except Exception as e:
+        st.error(f"Error decoding base64: {e}")
+        return ""
 
 st.title('A Wanted project')
 
@@ -20,7 +32,7 @@ foodCourt = st.text_input("food court total amount")
 shoppingMall= st.text_input("shopping mall total amount")
 spa = st.text_input("spa total amount")
 vrDeck = st.text_input("vr deck total amount")
-transported = st.toggle("Transported")
+#transported = st.toggle("Transported")
 try:
     roomService= int(roomService)
 except ValueError:
@@ -41,9 +53,65 @@ try:
     vrDeck= int(vrDeck)
 except ValueError:
    vrDeck = 0
+api_clicked  = st.button("Call the API")
+if(api_clicked):
+    # Make an API request
+    url = "https://api-56ce4d5f-779f448b-dku.eu-west-3.app.dataiku.io/public/api/v1/titanic_passengers/passenger/run"
+    response = requests.get(url)
+
+    # Check if the request was successful (status code 200)
+    if response.status_code == 200:
+        # Parse the JSON response
+        data = response.json()
+        response_data = data.get('response', {})
+
+        # Extracting values with default values if empty or missing
+        passenger = response_data.get('PassengerId', 'N/A')
+        name = response_data.get('Name', 'Unknown')
+        HomePlanet = response_data.get('HomePlanet', 'Earth')
+        CryptoSleep = response_data.get('CryoSleep', False)
+        cabin = response_data.get('Cabin', 'N/A')
+        destination = response_data.get('Destination', 'TRAPPIST-1e')
+        age = response_data.get('Age', 20.0)
+        vip = response_data.get('VIP', False)  
+        roomService = response_data.get('RoomService', 0)  
+        try:
+            roomService = int(float(roomService))
+        except ValueError:
+            roomService = 0
+        foodCourt = response_data.get('FoodCourt', 0)
+        try:
+            foodCourt= int(float(foodCourt))
+        except ValueError:
+            foodCourt = 0
+        shoppingMall = response_data.get('ShoppingMall', 0)
+        try:
+            shoppingMall = int(float(shoppingMall))
+        except ValueError:
+            shoppingMall = 0
+        spa = response_data.get('Spa', 0)
+        try:
+            spa= int(float(spa))
+        except ValueError:
+            spa= 0
+        vrDeck = response_data.get('VRDeck', 0)
+        try:
+            vrDeck= int(float(vrDeck))
+        except ValueError:
+            vrDeck = 0
+        #transported = response_data.get('Transported', False)   
+    else:
+        # Print an error message if the request was not successful
+        st.text("Error:", response.status_code)
 
 total = float(foodCourt+roomService+spa+shoppingMall+vrDeck)
 button_clicked  = st.button("Check the survival rate")
+if(passenger==''):
+    passenger = 'N/A'
+if(name==''):
+    name='Unknow'
+if(cabin ==''):
+    cabin='N/A'
 
 record_to_predict = {
       "PassengerId": passenger,
@@ -59,22 +127,41 @@ record_to_predict = {
       "new_Spa": spa,
       "new_VRDeck": vrDeck,
       "Total": total,
-      "Name": name,
-      "Transported": transported
+      "Name": name
 }
-st.table(pd.DataFrame(record_to_predict, index=[0]))
+#st.table(pd.DataFrame(record_to_predict, index=[0]))
+
+
 
 client = dataikuapi.APINodeClient("https://api-4034dccc-eaecd172-dku.eu-west-3.app.dataiku.io/", "space_titanic_crounch")
-if(button_clicked):
+if(button_clicked or api_clicked):
+    st.table(pd.DataFrame(record_to_predict, index=[0]))
     prediction = client.predict_record("space_titanic_end", record_to_predict)
-    if(passenger ==''):
+    if(passenger =='N/A'):
         passenger = "not defined"
-    outcome = "Alive"
+    outcome = "Dead"
     if prediction['result']["prediction"] == 'True':
-        outcome = "Dead"
-    st.text("The passenger " + name + " is " + outcome + " with a probability of "+ str(round(prediction['result']["probas"]['True'],4)*100)+"%")
+        outcome = "Alive"
+    st.text("The passenger " + name + " is " + outcome + " with a probability of "+ str(round(prediction['result']["probas"][prediction['result']["prediction"]],4)*100)+"%")
     st.bar_chart(prediction['result']["probas"])
+    api_clicked = False
 
+# Fetch the base64-encoded secret variable from the environment
+encoded_secret_variableD = os.environ.get("DATAIKU_API")
+    # Decode the base64-encoded secret variable
+secret_variable = decode_base64(encoded_secret_variableD)
+encoded_secret_variableK = os.environ.get("KAFKA_API")
+    # Decode the base64-encoded secret variable
+secret_variableK = decode_base64(encoded_secret_variableK)
+encoded_secret_variableKS = os.environ.get("KAFKA_API_SECRET")
+    # Decode the base64-encoded secret variable
+secret_variable2 = decode_base64(encoded_secret_variableKS)
+encoded_secret_variableKSs = os.environ.get("KAFKA_SERVER")
+    # Decode the base64-encoded secret variable
+secret_variable3 = decode_base64(encoded_secret_variableKSs)
+
+st.write(f"The secret variable is: {secret_variable}")
+st.write(secret_variable2 + " " + secret_variable3 + " " + secret_variableK)
 
 # Connect to Kafka
 cloud_api_key = 'PVOPH4N5P77FTZMI'
