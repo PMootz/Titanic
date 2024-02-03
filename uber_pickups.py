@@ -144,6 +144,7 @@ if askOnceKafka:
             age = data.get('Age', 20.0)
             vip = data.get('VIP', False)  
             roomService = data.get('RoomService', 0)  
+            newData = True
     finally:
         # Leave group and commit final offsets
         consumer.close()
@@ -197,7 +198,7 @@ record_to_predict = {
 
 
 client = dataikuapi.APINodeClient(dataikuApi,"space_titanic_crounch")
-if(button_clicked or api_clicked):
+if(button_clicked or api_clicked or newData):
     st.table(pd.DataFrame(record_to_predict, index=[0]))
     prediction = client.predict_record("space_titanic_end", record_to_predict)
     if(passenger =='N/A'):
@@ -208,4 +209,5 @@ if(button_clicked or api_clicked):
     st.text("The passenger " + name + " is " + outcome + " with a probability of "+ str(round(prediction['result']["probas"][prediction['result']["prediction"]],4)*100)+"%")
     st.bar_chart(prediction['result']["probas"])
     api_clicked = False
+    newData = False
   
