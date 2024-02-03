@@ -29,6 +29,8 @@ shoppingMall= st.text_input("shopping mall total amount")
 spa = st.text_input("spa total amount")
 vrDeck = st.text_input("vr deck total amount")
 #transported = st.toggle("Transported")
+
+#Convert the answer in int, or replace it by 0
 try:
     roomService= int(roomService)
 except ValueError:
@@ -49,6 +51,8 @@ try:
     vrDeck= int(vrDeck)
 except ValueError:
    vrDeck = 0
+
+
 api_clicked  = st.button("Call the API")
 if(api_clicked):
     # Make an API request
@@ -75,17 +79,17 @@ if(api_clicked):
         shoppingMall = response_data.get('ShoppingMall', 0)
         spa = response_data.get('Spa', 0)
         vrDeck = response_data.get('VRDeck', 0)
-        #transported = response_data.get('Transported', False)   
     else:
         # Print an error message if the request was not successful
         st.text("Error:", response.status_code)
 
 button_clicked  = st.button("Check the survival rate")
 
+#initialise the secret value 
 kafkaApi =""
 kafkaApiS=""
 kafkaS=""
-# Fetch the base64-encoded secret variable from the environment
+# Fetch the secret variable from the environment
 encoded_secret_variableD = os.environ.get("DATAIKU_API")
 if encoded_secret_variableD:
     dataikuApi= encoded_secret_variableD
@@ -105,11 +109,12 @@ if encoded_secret_variableKSs:
     kafkaS= encoded_secret_variableKSs
 
 
-# Connect to Kafka
+# Save the variables in a correct name
 CLUSTER_API_KEY = kafkaApi
 CLUSTER_API_SECRET = kafkaApiS
 bootstrap_servers = kafkaS
 
+#Part yo extract data from Kafka confluent
 askOnceKafka= st.button("Ask Kafka for one data")
 if askOnceKafka:
     consumer_conf = ccloud_lib.pop_schema_registry_params_from_config(CONF)
@@ -122,18 +127,19 @@ if askOnceKafka:
     try:
         msg = consumer.poll(5.0) # Search for all non-consumed events. It times out after 5 second
         if msg is None:
-            print("Waiting for message or event/error in poll()")
+            st.write("Waiting for message or event/error in poll()")
         elif msg.error():
             st.write('error: {}'.format(msg.error()))
         else:
-                # Check for Kafka message
             record_value = msg.value()
             datat = json.loads(record_value)
+            #check if the message contain tje passenger_informations or not and adapt to it
             if not(datat['passenger_informations']):
                 data=datat
             else:
                 data=datat['passenger_informations']
             st.write(data)
+            #extrat the data
             passenger = data.get('PassengerId', 'N/A')
             name = data.get('Name', 'Unknown')
             homePlanet = data.get('HomePlanet', 'Earth')
@@ -148,13 +154,15 @@ if askOnceKafka:
         # Leave group and commit final offsets
         consumer.close()
     
-    
+#Set default value for the data empty
 if(passenger==''):
     passenger = 'N/A'
 if(name==''):
     name='Unknow'
 if(cabin ==''):
     cabin='N/A'
+
+#the data in api and kafka are in float but we need int
 try:
     roomService = int(float(roomService))
 except ValueError:
@@ -175,9 +183,10 @@ try:
     vrDeck= int(float(vrDeck))
 except ValueError:
     vrDeck = 0
-
+#Calculate the total amount of the service
 total = float(foodCourt+roomService+spa+shoppingMall+vrDeck)
 
+#Set the variable with all the data to predict
 record_to_predict = {
       "PassengerId": passenger,
       "HomePlanet": homePlanet,
@@ -195,18 +204,24 @@ record_to_predict = {
       "Name": name
 }
 
-
+#appel du client
 client = dataikuapi.APINodeClient(dataikuApi,"space_titanic_crounch")
+#Check if there is a call for a prediction or not
 if(button_clicked or api_clicked or newData):
+    #Show in a table the data used to be predicted
     st.table(pd.DataFrame(record_to_predict, index=[0]))
+    #Call the API
     prediction = client.predict_record("space_titanic_end", record_to_predict)
     if(passenger =='N/A'):
         passenger = "not defined"
     outcome = "Dead"
     if prediction['result']["prediction"] == 'True':
         outcome = "Alive"
+    #Display the answer
     st.text("The passenger " + name + " is " + outcome + " with a probability of "+ str(round(prediction['result']["probas"][prediction['result']["prediction"]],4)*100)+"%")
     st.bar_chart(prediction['result']["probas"])
+    #Set the callable boolean to False again
     api_clicked = False
     newData = False
+    button_clicked= False
   
