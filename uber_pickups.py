@@ -13,7 +13,7 @@ from kafka import KafkaConsumer
 CONF = ccloud_lib.read_ccloud_config("python.config")
 TOPIC = "spaceship_titanic_data" 
 
-newdata = False
+newData = False
 
 st.title('A Wanted project')
 
