@@ -110,10 +110,8 @@ kafkaApiS=""
 kafkaS=""
 # Fetch the base64-encoded secret variable from the environment
 encoded_secret_variableD = os.environ.get("DATAIKU_API")
-st.write(encoded_secret_variableD)
 if encoded_secret_variableD:
-    decoded_bytes = base64.b64decode(encoded_secret_variableD)
-    dataikuApi= decoded_bytes.decode('utf-8')
+    dataikuApi= encoded_secret_variableD
 else:
     dataikuApi ="https://api-4034dccc-eaecd172-dku.eu-west-3.app.dataiku.io/"
     # Decode the base64-encoded secret variable
@@ -122,8 +120,7 @@ encoded_secret_variableK = os.environ.get("KAFKA_API")
     # Decode the base64-encoded secret variable
 st.write(encoded_secret_variableK)
 if encoded_secret_variableK:
-    decoded_bytes = base64.b64decode(encoded_secret_variableK)
-    kafkaApi= decoded_bytes.decode('utf-8')
+    kafkaApi= encoded_secret_variableK
 else:
     kafkaC=False
 
@@ -131,16 +128,14 @@ encoded_secret_variableKS = os.environ.get("KAFKA_API_SECRET")
 st.write(encoded_secret_variableKS)
     # Decode the base64-encoded secret variable
 if encoded_secret_variableKS:
-    decoded_bytes = base64.b64decode(encoded_secret_variableKS)
-    kafkaApiS= decoded_bytes.decode('utf-8')
+    kafkaApiS= encoded_secret_variableKS
 else:
     kafkaC=False
 encoded_secret_variableKSs = os.environ.get("KAFKA_SERVER")
 st.write(encoded_secret_variableKSs)
     # Decode the base64-encoded secret variable
 if encoded_secret_variableKSs:
-    decoded_bytes = base64.b64decode(encoded_secret_variableKSs)
-    kafkaS= decoded_bytes.decode('utf-8')
+    kafkaS= encoded_secret_variableKSs
 else:
     kafkaC=False
 
