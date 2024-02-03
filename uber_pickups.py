@@ -18,8 +18,8 @@ st.title('A Wanted project')
 
 passenger = st.text_input("Passenger Id")
 name = st.text_input("Name Forname")
-HomePlanet =st.radio("Home planet", ['Earth','Mars','Europa'])
-CryptoSleep = st.toggle("CryoSleep")
+homePlanet =st.radio("Home planet", ['Earth','Mars','Europa'])
+cryptoSleep = st.toggle("CryoSleep")
 cabin = st.text_input("Cabin name")
 destination = st.radio("Destination",['TRAPPIST-1e','55 Cancri e','P50 3318.5-22'])
 age = float(st.slider("Age",0,400))
@@ -65,8 +65,8 @@ if(api_clicked):
         # Extracting values with default values if empty or missing
         passenger = response_data.get('PassengerId', 'N/A')
         name = response_data.get('Name', 'Unknown')
-        HomePlanet = response_data.get('HomePlanet', 'Earth')
-        CryptoSleep = response_data.get('CryoSleep', False)
+        homePlanet = response_data.get('HomePlanet', 'Earth')
+        cryptoSleep = response_data.get('CryoSleep', False)
         cabin = response_data.get('Cabin', 'N/A')
         destination = response_data.get('Destination', 'TRAPPIST-1e')
         age = response_data.get('Age', 20.0)
@@ -114,26 +114,20 @@ if encoded_secret_variableD:
     dataikuApi= encoded_secret_variableD
 else:
     dataikuApi ="https://api-4034dccc-eaecd172-dku.eu-west-3.app.dataiku.io/"
-    # Decode the base64-encoded secret variable
 
 encoded_secret_variableK = os.environ.get("KAFKA_API")
-    # Decode the base64-encoded secret variable
-st.write(encoded_secret_variableK)
 if encoded_secret_variableK:
     kafkaApi= encoded_secret_variableK
 else:
     kafkaC=False
 
 encoded_secret_variableKS = os.environ.get("KAFKA_API_SECRET")
-st.write(encoded_secret_variableKS)
-    # Decode the base64-encoded secret variable
 if encoded_secret_variableKS:
     kafkaApiS= encoded_secret_variableKS
 else:
     kafkaC=False
+    
 encoded_secret_variableKSs = os.environ.get("KAFKA_SERVER")
-st.write(encoded_secret_variableKSs)
-    # Decode the base64-encoded secret variable
 if encoded_secret_variableKSs:
     kafkaS= encoded_secret_variableKSs
 else:
@@ -165,11 +159,12 @@ if kafkaC:
                 record_key = msg.key()
                 record_value = msg.value()
                 data = json.loads(record_value)
+                sy.write(data)
                 newdata = True
                 passenger = data.get('PassengerId', 'N/A')
                 name = data.get('Name', 'Unknown')
-                HomePlanet = data.get('HomePlanet', 'Earth')
-                CryptoSleep = data.get('CryoSleep', False)
+                homePlanet = data.get('HomePlanet', 'Earth')
+                cryptoSleep = data.get('CryoSleep', False)
                 cabin = data.get('Cabin', 'N/A')
                 destination = data.get('Destination', 'TRAPPIST-1e')
                 age = data.get('Age', 20.0)
@@ -208,8 +203,8 @@ else:
                 newdata = True
                 passenger = data.get('PassengerId', 'N/A')
                 name = data.get('Name', 'Unknown')
-                HomePlanet = data.get('HomePlanet', 'Earth')
-                CryptoSleep = data.get('CryoSleep', False)
+                homePlanet = data.get('HomePlanet', 'Earth')
+                cryptoSleep = data.get('CryoSleep', False)
                 cabin = data.get('Cabin', 'N/A')
                 destination = data.get('Destination', 'TRAPPIST-1e')
                 age = data.get('Age', 20.0)
@@ -232,8 +227,8 @@ if(cabin ==''):
 
 record_to_predict = {
       "PassengerId": passenger,
-      "HomePlanet": HomePlanet,
-      "CryoSleep": CryptoSleep,
+      "HomePlanet": homePlanet,
+      "CryoSleep": cryptoSleep,
       "Cabin": cabin,
       "Destination": destination,
       "Age": age,
