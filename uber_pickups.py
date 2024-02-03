@@ -1,5 +1,4 @@
 import streamlit as st
-import pandas as pd
 import dataikuapi
 import requests
 import json
@@ -8,7 +7,6 @@ import base64
 import ccloud_lib
 from confluent_kafka import Consumer
 import time
-from kafka import KafkaConsumer
 
 CONF = ccloud_lib.read_ccloud_config("python.config")
 TOPIC = "spaceship_titanic_data" 
